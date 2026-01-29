@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { HelmetProvider } from 'react-helmet-async';
 import { HashRouter, Routes, Route, useNavigate, useParams, Link } from 'react-router-dom';
 import { Product, Category, AppState, Banner, CategoryItem } from './types';
 import Home from './pages/Home';
@@ -215,6 +216,14 @@ const App: React.FC = () => {
     }
   };
 
+  const updateCategory = async (category: CategoryItem) => {
+    setState(prev => ({
+      ...prev,
+      categories: prev.categories.map(c => c.id === category.id ? category : c)
+    }));
+    await dbService.upsertCategory(category).catch(console.error);
+  };
+
   const deleteCategory = async (id: string) => {
     setState(prev => ({
       ...prev,
@@ -249,44 +258,46 @@ const App: React.FC = () => {
   }
 
   return (
-    <HashRouter>
-      <div className="min-h-screen flex flex-col w-full bg-background-light dark:bg-background-dark shadow-2xl relative overflow-x-hidden">
-        <Routes>
-          <Route path="/" element={<Home state={state} onToggleFavorite={toggleFavorite} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />} />
-          <Route path="/category/:categoryName" element={<CategoryPage state={state} onToggleFavorite={toggleFavorite} />} />
-          <Route path="/product/:productId" element={<ProductDetail state={state} onToggleFavorite={toggleFavorite} />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/admin" element={
-            <RequireAuth>
-              <Admin
-                state={state}
-                onAdd={addProduct}
-                onUpdate={updateProduct}
-                onDelete={deleteProduct}
-                onAddCategory={addCategory}
-                onAddSubcategory={addSubcategory}
-                onDeleteCategory={deleteCategory}
-                onAddBanner={addBanner}
-                onRemoveBanner={removeBanner}
-                onSync={syncToCloud}
-              />
-            </RequireAuth>
-          } />
-        </Routes>
+    <HelmetProvider>
+      <HashRouter>
+        <div className="min-h-screen flex flex-col w-full bg-background-light dark:bg-background-dark shadow-2xl relative overflow-x-hidden">
+          <Routes>
+            <Route path="/" element={<Home state={state} onToggleFavorite={toggleFavorite} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />} />
+            <Route path="/category/:categoryName" element={<CategoryPage state={state} onToggleFavorite={toggleFavorite} />} />
+            <Route path="/product/:productId" element={<ProductDetail state={state} onToggleFavorite={toggleFavorite} />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/admin" element={
+              <RequireAuth>
+                <Admin
+                  state={state}
+                  onAdd={addProduct}
+                  onUpdate={updateProduct}
+                  onDelete={deleteProduct}
+                  onAddCategory={addCategory}
+                  onAddSubcategory={addSubcategory}
+                  onDeleteCategory={deleteCategory}
+                  onAddBanner={addBanner}
+                  onRemoveBanner={removeBanner}
+                  onSync={syncToCloud}
+                />
+              </RequireAuth>
+            } />
+          </Routes>
 
-        {/* Persistent Bottom Navigation - Mobile Only */}
-        <nav className="md:hidden fixed bottom-0 left-0 w-full bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-t border-gray-200 dark:border-gray-800 px-6 py-3 flex justify-around items-center z-50">
-          <Link to="/" className="flex flex-col items-center gap-1 text-primary">
-            <span className="material-symbols-outlined text-[24px]">home</span>
-            <span className="text-[10px] font-bold">Início</span>
-          </Link>
-          <Link to="/category/Tudo" className="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500">
-            <span className="material-symbols-outlined text-[24px]">explore</span>
-            <span className="text-[10px] font-medium">Explorar</span>
-          </Link>
-        </nav>
-      </div>
-    </HashRouter>
+          {/* Persistent Bottom Navigation - Mobile Only */}
+          <nav className="md:hidden fixed bottom-0 left-0 w-full bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-t border-gray-200 dark:border-gray-800 px-6 py-3 flex justify-around items-center z-50">
+            <Link to="/" className="flex flex-col items-center gap-1 text-primary">
+              <span className="material-symbols-outlined text-[24px]">home</span>
+              <span className="text-[10px] font-bold">Início</span>
+            </Link>
+            <Link to="/category/Tudo" className="flex flex-col items-center gap-1 text-gray-400 dark:text-gray-500">
+              <span className="material-symbols-outlined text-[24px]">explore</span>
+              <span className="text-[10px] font-medium">Explorar</span>
+            </Link>
+          </nav>
+        </div>
+      </HashRouter>
+    </HelmetProvider>
   );
 };
 

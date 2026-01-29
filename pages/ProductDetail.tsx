@@ -1,5 +1,6 @@
 
 import React, { useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AppState } from '../types';
 
@@ -51,6 +52,16 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ state, onToggleFavorite }
 
   return (
     <div className="pb-32 animate-in slide-in-from-right duration-300">
+      <Helmet>
+        <title>{product.name} | Wend Promoções</title>
+        <meta property="og:title" content={product.name} />
+        <meta property="og:description" content={`Confira ${product.name} por apenas R$ ${product.price.toLocaleString('pt-BR')}.`} />
+        <meta property="og:image" content={product.imageUrl} />
+        <meta property="og:url" content={window.location.href} />
+        <meta name="twitter:title" content={product.name} />
+        <meta name="twitter:description" content={`Confira ${product.name} por apenas R$ ${product.price.toLocaleString('pt-BR')}.`} />
+        <meta name="twitter:image" content={product.imageUrl} />
+      </Helmet>
       <header className="sticky top-0 z-50 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 flex items-center p-4 h-16 justify-between">
         <button onClick={() => navigate(-1)} className="size-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
           <span className="material-symbols-outlined text-primary">arrow_back_ios_new</span>

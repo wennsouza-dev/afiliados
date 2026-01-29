@@ -240,7 +240,36 @@ const Admin: React.FC<AdminProps> = ({ state, onAdd, onUpdate, onDelete, onAddCa
               {state.categories.map(cat => (
                 <div key={cat.id} className="bg-white dark:bg-gray-900 rounded-2xl p-4 border border-gray-100 dark:border-gray-800">
                   <div className="flex justify-between items-center mb-4">
-                    <h4 className="font-bold text-lg">{cat.name}</h4>
+                    <div className="flex items-center gap-2 flex-1">
+                      {editingId === cat.id ? (
+                        <input
+                          className="font-bold text-lg bg-gray-50 dark:bg-gray-800 border-none rounded-lg px-2 focus:ring-2 focus:ring-primary w-full max-w-xs"
+                          defaultValue={cat.name}
+                          onBlur={(e) => {
+                            if (e.target.value !== cat.name) {
+                              onUpdateCategory({ ...cat, name: e.target.value });
+                            }
+                            setEditingId(null);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              if (e.currentTarget.value !== cat.name) {
+                                onUpdateCategory({ ...cat, name: e.currentTarget.value });
+                              }
+                              setEditingId(null);
+                            }
+                          }}
+                          autoFocus
+                        />
+                      ) : (
+                        <div className="flex items-center gap-2 group">
+                          <h4 className="font-bold text-lg">{cat.name}</h4>
+                          <button onClick={() => setEditingId(cat.id)} className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-primary transition-opacity p-1">
+                            <span className="material-symbols-outlined text-sm">edit</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
                     <button onClick={() => onDeleteCategory(cat.id)} className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition-colors">
                       <span className="material-symbols-outlined">delete</span>
                     </button>
@@ -249,8 +278,31 @@ const Admin: React.FC<AdminProps> = ({ state, onAdd, onUpdate, onDelete, onAddCa
                   <div className="pl-4 border-l-2 border-gray-100 dark:border-gray-800 space-y-3">
                     <div className="flex flex-wrap gap-2 mb-3">
                       {cat.subcategories.map((sub, idx) => (
-                        <span key={idx} className="bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full text-xs font-semibold text-gray-600 dark:text-gray-300">
-                          {sub}
+                        <span key={idx} className="group flex items-center gap-1 bg-gray-100 dark:bg-gray-800 pl-3 pr-1 py-1 rounded-full text-xs font-semibold text-gray-600 dark:text-gray-300">
+                          <span
+                            className="cursor-pointer hover:text-primary"
+                            onClick={() => {
+                              const newName = prompt("Editar nome da subcategoria:", sub);
+                              if (newName && newName !== sub) {
+                                const newSubs = [...cat.subcategories];
+                                newSubs[idx] = newName;
+                                onUpdateCategory({ ...cat, subcategories: newSubs });
+                              }
+                            }}
+                          >
+                            {sub}
+                          </span>
+                          <button
+                            onClick={() => {
+                              if (confirm(`Remover subcategoria "${sub}"?`)) {
+                                const newSubs = cat.subcategories.filter((_, i) => i !== idx);
+                                onUpdateCategory({ ...cat, subcategories: newSubs });
+                              }
+                            }}
+                            className="hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full p-0.5"
+                          >
+                            <span className="material-symbols-outlined text-[14px] leading-none text-gray-400 hover:text-red-500 flex items-center justify-center">close</span>
+                          </button>
                         </span>
                       ))}
                       {cat.subcategories.length === 0 && <span className="text-xs text-gray-400 italic">Nenhuma subcategoria</span>}

@@ -66,8 +66,8 @@ interface HomeProps {
 const Home: React.FC<HomeProps> = ({ state, onToggleFavorite, searchQuery, setSearchQuery }) => {
   const navigate = useNavigate();
 
-  // Featured limit 10000
-  const featuredProducts = state.products.filter(p => p.isFeatured).slice(0, 10000);
+  // Featured section now strictly shows "Best Sellers" as requested
+  const featuredProducts = state.products.filter(p => p.isBestSeller).slice(0, 30);
   // Use dynamic categories from state
   const categories = state.categories;
 

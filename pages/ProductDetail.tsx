@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AppState } from '../types';
 
@@ -12,6 +12,10 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ state, onToggleFavorite }
   const { productId } = useParams();
   const navigate = useNavigate();
   const product = state.products.find(p => p.id === productId);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [productId]);
 
   if (!product) {
     return (

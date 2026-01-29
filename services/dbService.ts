@@ -16,6 +16,7 @@ interface DBProduct {
     is_featured: boolean;
     rating: number;
     reviews_count: number;
+    accepts_12x: boolean;
 }
 
 interface DBBanner {
@@ -51,7 +52,8 @@ export const dbService = {
             description: p.description,
             isFeatured: p.is_featured,
             rating: p.rating,
-            reviewsCount: p.reviews_count
+            reviewsCount: p.reviews_count,
+            accepts_12x: p.accepts_12x
         }));
     },
 
@@ -68,7 +70,8 @@ export const dbService = {
             description: product.description,
             is_featured: product.isFeatured || false,
             rating: product.rating,
-            reviews_count: product.reviewsCount
+            reviews_count: product.reviewsCount,
+            accepts_12x: product.accepts_12x || false
         };
 
         const { error } = await supabase.from('products').upsert(dbProduct);

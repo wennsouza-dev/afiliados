@@ -26,6 +26,7 @@ export interface Product {
   isFeatured?: boolean;
   rating: number;
   reviewsCount: number;
+  accepts_12x?: boolean;
 }
 
 export enum Category {

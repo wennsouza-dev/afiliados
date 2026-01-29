@@ -136,6 +136,11 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ state, onToggleFavorite }) 
                       className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
                     />
                   </Link>
+                  {product.accepts_12x && (
+                    <div className="absolute bottom-2 left-2 right-2 bg-green-600 text-white text-[9px] font-bold py-1 px-2 rounded-md text-center shadow-sm z-20">
+                      PARCELE EM ATÉ 12X
+                    </div>
+                  )}
                   <button
                     onClick={() => onToggleFavorite(product.id)}
                     className={`absolute top-3 right-3 size-9 rounded-full flex items-center justify-center backdrop-blur-sm z-20 shadow-sm transition-colors ${state.favorites.includes(product.id) ? 'bg-red-50 text-red-500' : 'bg-white/80 dark:bg-black/40 text-gray-400'

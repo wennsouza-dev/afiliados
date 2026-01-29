@@ -73,25 +73,14 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ state, onToggleFavorite }
               </span>
             )}
           </div>
-          <p className="text-green-600 dark:text-green-400 text-sm font-semibold pt-1 flex items-center gap-1">
-            <span className="material-symbols-outlined text-sm">bolt</span>
-            15% de desconto hoje no Pix
-          </p>
+
           <p className="text-[10px] text-slate-400 mt-2 leading-tight">
             * O preço pode variar dependendo do dia, horários, estoque e forma de pagamento. O valor final é o apresentado no site do vendedor.
           </p>
         </div>
 
-        <div className="grid grid-cols-3 gap-3 mb-8">
-          <div className="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-100 dark:border-slate-800 flex flex-col items-center text-center">
-            <span className="material-symbols-outlined text-primary mb-1">local_shipping</span>
-            <span className="text-[8px] font-bold text-slate-500 uppercase">Frete Grátis</span>
-          </div>
-          <div className="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-100 dark:border-slate-800 flex flex-col items-center text-center">
-            <span className="material-symbols-outlined text-primary mb-1">verified_user</span>
-            <span className="text-[8px] font-bold text-slate-500 uppercase">12 Meses</span>
-          </div>
-          <div className="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-100 dark:border-slate-800 flex flex-col items-center text-center">
+        <div className="flex gap-3 mb-8">
+          <div className="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-100 dark:border-slate-800 flex flex-col items-center text-center px-6">
             <span className="material-symbols-outlined text-primary mb-1">workspace_premium</span>
             <span className="text-[8px] font-bold text-slate-500 uppercase">Original</span>
           </div>

@@ -45,7 +45,8 @@ const Admin: React.FC<AdminProps> = ({ state, onAdd, onUpdate, onDelete, onAddCa
     affiliateUrl: '',
     description: '',
     rating: 5,
-    reviewsCount: 0
+    reviewsCount: 0,
+    accepts_12x: false
   });
 
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -79,7 +80,8 @@ const Admin: React.FC<AdminProps> = ({ state, onAdd, onUpdate, onDelete, onAddCa
       affiliateUrl: '',
       description: '',
       rating: 5,
-      reviewsCount: 0
+      reviewsCount: 0,
+      accepts_12x: false
     });
     setEditingId(null);
   };
@@ -470,6 +472,19 @@ const Admin: React.FC<AdminProps> = ({ state, onAdd, onUpdate, onDelete, onAddCa
                   />
                 </div>
 
+                <div className="flex items-center gap-2 mb-4">
+                  <input
+                    type="checkbox"
+                    id="accepts_12x"
+                    className="w-5 h-5 rounded text-primary focus:ring-primary border-gray-300"
+                    checked={formData.accepts_12x || false}
+                    onChange={e => setFormData({ ...formData, accepts_12x: e.target.checked })}
+                  />
+                  <label htmlFor="accepts_12x" className="text-sm font-semibold select-none cursor-pointer">
+                    Aceita Parcelamento em até 12x
+                  </label>
+                </div>
+
                 <button type="submit" className="w-full bg-primary text-white font-bold h-14 rounded-2xl shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all flex items-center justify-center gap-2 mt-4">
                   <span className="material-symbols-outlined">save</span>
                   {editingId ? 'Atualizar Produto' : 'Salvar Produto'}
@@ -480,7 +495,7 @@ const Admin: React.FC<AdminProps> = ({ state, onAdd, onUpdate, onDelete, onAddCa
                     type="button"
                     onClick={() => {
                       setEditingId(null);
-                      setFormData({ name: '', category: '', subcategory: '', price: 0, imageUrl: '', affiliateUrl: '', description: '', rating: 5, reviewsCount: 0 });
+                      setFormData({ name: '', category: '', subcategory: '', price: 0, imageUrl: '', affiliateUrl: '', description: '', rating: 5, reviewsCount: 0, accepts_12x: false });
                     }}
                     className="w-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 font-bold h-14 rounded-2xl transition-all"
                   >

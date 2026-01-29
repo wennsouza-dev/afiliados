@@ -78,12 +78,15 @@ const Home: React.FC<HomeProps> = ({ state, onToggleFavorite, searchQuery, setSe
               // Determine which banner to show (e.g., last one)
               const banner = state.banners[state.banners.length - 1];
               return (
-                <Link to={banner.linkUrl || '#'} className="relative w-full overflow-hidden rounded-2xl aspect-[16/9] shadow-lg group block">
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-primary/40 flex flex-col justify-end p-6 z-10">
-                    {banner.title && <span className="bg-white/20 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded w-fit mb-2">Oferta</span>}
-                    {banner.title && <h3 className="text-white text-2xl font-bold leading-tight mb-1">{banner.title}</h3>}
-                    {banner.subtitle && <p className="text-white/90 text-sm">{banner.subtitle}</p>}
-                  </div>
+                <Link to={banner.linkUrl || '#'} className="relative w-full overflow-hidden rounded-2xl aspect-[16/9] md:aspect-[3/1] shadow-lg group block">
+                  {/* Overlay removed to show original colors */}
+                  {(banner.title || banner.subtitle) && (
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-6 z-10">
+                      {banner.title && <span className="bg-white/20 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded w-fit mb-2">Oferta</span>}
+                      {banner.title && <h3 className="text-white text-2xl font-bold leading-tight mb-1">{banner.title}</h3>}
+                      {banner.subtitle && <p className="text-white/90 text-sm">{banner.subtitle}</p>}
+                    </div>
+                  )}
                   <picture>
                     <source media="(min-width: 768px)" srcSet={banner.desktopImageUrl} />
                     <img
@@ -136,6 +139,11 @@ const Home: React.FC<HomeProps> = ({ state, onToggleFavorite, searchQuery, setSe
                     className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500"
                   />
                 </Link>
+                {product.accepts_12x && (
+                  <div className="absolute bottom-2 left-2 right-2 bg-green-600 text-white text-[9px] font-bold py-1 px-2 rounded-md text-center shadow-sm z-20">
+                    PARCELE EM ATÉ 12X
+                  </div>
+                )}
                 <button
                   onClick={() => onToggleFavorite(product.id)}
                   className={`absolute top-2 right-2 size-8 rounded-full flex items-center justify-center backdrop-blur-sm transition-colors ${state.favorites.includes(product.id) ? 'bg-red-50 text-red-500' : 'bg-white/80 dark:bg-black/40 text-gray-400'

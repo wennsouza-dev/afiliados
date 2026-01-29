@@ -24,20 +24,26 @@ const RequireAuth: React.FC<{ children: React.ReactElement }> = ({ children }) =
 
 const App: React.FC = () => {
   const [state, setState] = useState<AppState>(() => {
-    const saved = localStorage.getItem('affiliate_store_state');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      // Migration: Ensure categories exist if loading old state
-      if (!parsed.categories) {
-        parsed.categories = [
-          { id: '1', name: 'Eletrônicos', subcategories: ['Celulares', 'TVs', 'Notebooks', 'Fones'] },
-          { id: '2', name: 'Casa', subcategories: ['Eletrodomésticos', 'Decoração', 'Móveis'] },
-          { id: '3', name: 'Moda', subcategories: ['Roupas', 'Sapatos', 'Acessórios'] },
-          { id: '4', name: 'Beleza', subcategories: ['Perfumes', 'Maquiagem', 'Skincare'] }
-        ];
+    try {
+      const saved = localStorage.getItem('affiliate_store_state');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Migration: Ensure categories exist if loading old state
+        if (!parsed.categories) {
+          parsed.categories = [
+            { id: '1', name: 'Eletrônicos', subcategories: ['Celulares', 'TVs', 'Notebooks', 'Fones'] },
+            { id: '2', name: 'Casa', subcategories: ['Eletrodomésticos', 'Decoração', 'Móveis'] },
+            { id: '3', name: 'Moda', subcategories: ['Roupas', 'Sapatos', 'Acessórios'] },
+            { id: '4', name: 'Beleza', subcategories: ['Perfumes', 'Maquiagem', 'Skincare'] }
+          ];
+        }
+        return parsed;
       }
-      return parsed;
+    } catch (error) {
+      console.error('Failed to load state from localStorage:', error);
+      // Fallback to default state if parsing fails
     }
+
     return {
       products: INITIAL_PRODUCTS,
       favorites: [],

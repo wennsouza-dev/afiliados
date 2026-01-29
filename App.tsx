@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, useNavigate, useParams, Link } from 'react-router-dom';
-import { Product, Category, AppState } from './types';
+import { Product, Category, AppState, Banner } from './types';
 import { INITIAL_PRODUCTS } from './constants';
 import Home from './pages/Home';
 import CategoryPage from './pages/CategoryPage';
@@ -52,6 +52,16 @@ const App: React.FC = () => {
         { id: '2', name: 'Casa', subcategories: ['Eletrodomésticos', 'Decoração', 'Móveis'] },
         { id: '3', name: 'Moda', subcategories: ['Roupas', 'Sapatos', 'Acessórios'] },
         { id: '4', name: 'Beleza', subcategories: ['Perfumes', 'Maquiagem', 'Skincare'] }
+      ],
+      banners: [
+        {
+          id: '1',
+          desktopImageUrl: 'https://picsum.photos/seed/tech/1200/400',
+          mobileImageUrl: 'https://picsum.photos/seed/tech/600/600',
+          title: 'Semana Tech chegou!',
+          subtitle: 'Economize até 40% nos melhores eletrônicos.',
+          linkUrl: '/category/Eletrônicos'
+        }
       ]
     };
   });
@@ -117,6 +127,20 @@ const App: React.FC = () => {
     }));
   };
 
+  const addBanner = (banner: Banner) => {
+    setState(prev => ({
+      ...prev,
+      banners: [...prev.banners, banner]
+    }));
+  };
+
+  const removeBanner = (id: string) => {
+    setState(prev => ({
+      ...prev,
+      banners: prev.banners.filter(b => b.id !== id)
+    }));
+  };
+
   return (
     <HashRouter>
       <div className="min-h-screen flex flex-col w-full bg-background-light dark:bg-background-dark shadow-2xl relative overflow-x-hidden">
@@ -135,6 +159,8 @@ const App: React.FC = () => {
                 onAddCategory={addCategory}
                 onAddSubcategory={addSubcategory}
                 onDeleteCategory={deleteCategory}
+                onAddBanner={addBanner}
+                onRemoveBanner={removeBanner}
               />
             </RequireAuth>
           } />

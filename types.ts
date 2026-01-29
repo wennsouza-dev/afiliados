@@ -4,6 +4,15 @@ export interface CategoryItem {
   subcategories: string[];
 }
 
+export interface Banner {
+  id: string;
+  desktopImageUrl: string;
+  mobileImageUrl: string;
+  title?: string;
+  subtitle?: string;
+  linkUrl?: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -31,4 +40,5 @@ export interface AppState {
   products: Product[];
   favorites: string[];
   categories: CategoryItem[];
+  banners: Banner[];
 }

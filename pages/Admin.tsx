@@ -12,17 +12,28 @@ interface AdminProps {
   onAddCategory: (name: string) => void;
   onAddSubcategory: (categoryId: string, subcategory: string) => void;
   onDeleteCategory: (id: string) => void;
+  onAddBanner: (banner: any) => void;
+  onRemoveBanner: (id: string) => void;
 }
 
-const Admin: React.FC<AdminProps> = ({ state, onAdd, onUpdate, onDelete, onAddCategory, onAddSubcategory, onDeleteCategory }) => {
+const Admin: React.FC<AdminProps> = ({ state, onAdd, onUpdate, onDelete, onAddCategory, onAddSubcategory, onDeleteCategory, onAddBanner, onRemoveBanner }) => {
   const navigate = useNavigate();
   const [isGenerating, setIsGenerating] = useState(false);
-  const [activeTab, setActiveTab] = useState<'products' | 'categories'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'categories' | 'banners'>('products');
 
   // Category Form State
   const [newCategoryName, setNewCategoryName] = useState('');
   const [newSubcategoryName, setNewSubcategoryName] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+
+  // Banner Form State
+  const [newBanner, setNewBanner] = useState({
+    title: '',
+    subtitle: '',
+    linkUrl: '',
+    desktopImageUrl: '',
+    mobileImageUrl: ''
+  });
 
   const [formData, setFormData] = useState<Partial<Product>>({
     name: '',
@@ -101,6 +112,67 @@ const Admin: React.FC<AdminProps> = ({ state, onAdd, onUpdate, onDelete, onAddCa
     setNewSubcategoryName('');
   };
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, field: 'desktopImageUrl' | 'mobileImageUrl') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const maxWidth = field === 'desktopImageUrl' ? 1200 : 600;
+        const scale = maxWidth / img.width;
+
+        // Only resize if bigger
+        if (scale < 1) {
+          canvas.width = maxWidth;
+          canvas.height = img.height * scale;
+        } else {
+          canvas.width = img.width;
+          canvas.height = img.height;
+        }
+
+        ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+        setNewBanner(prev => ({ ...prev, [field]: compressedDataUrl }));
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleAddBanner = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newBanner.desktopImageUrl || !newBanner.mobileImageUrl) {
+      alert("Por favor, adicione ambas as imagens (Desktop e Mobile).");
+      return;
+    }
+
+    onAddBanner({
+      id: Date.now().toString(),
+      ...newBanner
+    });
+
+    setNewBanner({
+      title: '',
+      subtitle: '',
+      linkUrl: '',
+      desktopImageUrl: '',
+      mobileImageUrl: ''
+    });
+  };
+
+  const toggleFeatured = (product: Product) => {
+    const currentFeaturedCount = state.products.filter(p => p.isFeatured).length;
+    if (!product.isFeatured && currentFeaturedCount >= 10) {
+      alert("Você só pode ter até 10 destaques. Remova um destaque antes de adicionar outro.");
+      return;
+    }
+    onUpdate({ ...product, isFeatured: !product.isFeatured });
+  };
+
   return (
     <div className="pb-32">
       <header className="sticky top-0 z-50 flex items-center bg-white dark:bg-background-dark border-b border-gray-200 dark:border-gray-800 p-4 justify-between">
@@ -108,9 +180,26 @@ const Admin: React.FC<AdminProps> = ({ state, onAdd, onUpdate, onDelete, onAddCa
           <span className="material-symbols-outlined">arrow_back</span>
         </button>
         <h2 className="text-lg font-bold">Painel Admin</h2>
-        <button onClick={() => setActiveTab(activeTab === 'products' ? 'categories' : 'products')} className={`px-4 py-2 rounded-full text-xs font-bold transition-colors ${activeTab === 'categories' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600'}`}>
-          {activeTab === 'products' ? 'Gerenciar Categorias' : 'Gerenciar Produtos'}
-        </button>
+        <div className="flex bg-gray-100 rounded-full p-1 gap-1">
+          <button
+            onClick={() => setActiveTab('products')}
+            className={`px-4 py-2 rounded-full text-xs font-bold transition-colors ${activeTab === 'products' ? 'bg-white shadow-sm text-primary' : 'text-gray-500'}`}
+          >
+            Produtos
+          </button>
+          <button
+            onClick={() => setActiveTab('categories')}
+            className={`px-4 py-2 rounded-full text-xs font-bold transition-colors ${activeTab === 'categories' ? 'bg-white shadow-sm text-primary' : 'text-gray-500'}`}
+          >
+            Categorias
+          </button>
+          <button
+            onClick={() => setActiveTab('banners')}
+            className={`px-4 py-2 rounded-full text-xs font-bold transition-colors ${activeTab === 'banners' ? 'bg-white shadow-sm text-primary' : 'text-gray-500'}`}
+          >
+            Banners
+          </button>
+        </div>
       </header>
 
       <div className="p-4">
@@ -175,6 +264,90 @@ const Admin: React.FC<AdminProps> = ({ state, onAdd, onUpdate, onDelete, onAddCa
                   </div>
                 </div>
               ))}
+            </div>
+          </section>
+        ) : activeTab === 'banners' ? (
+          <section className="space-y-8">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-800">
+              <h3 className="text-xl font-bold mb-4">Adicionar Novo Banner</h3>
+              <form onSubmit={handleAddBanner} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold block">Imagem Desktop (Horizontal)</label>
+                    <div className={`border-2 border-dashed border-gray-300 rounded-xl p-4 flex flex-col items-center justify-center h-32 text-center cursor-pointer hover:bg-gray-50 transition ${newBanner.desktopImageUrl ? 'bg-green-50 border-green-300' : ''}`}>
+                      <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'desktopImageUrl')} className="hidden" id="desktop-upload" />
+                      <label htmlFor="desktop-upload" className="cursor-pointer w-full h-full flex flex-col items-center justify-center">
+                        {newBanner.desktopImageUrl ? (
+                          <span className="text-green-600 font-bold text-xs">Imagem Carregada!</span>
+                        ) : (
+                          <>
+                            <span className="material-symbols-outlined text-gray-400">desktop_windows</span>
+                            <span className="text-xs text-gray-400 mt-1">Carregar Imagem</span>
+                          </>
+                        )}
+                      </label>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold block">Imagem Mobile (Quadrada/Vertical)</label>
+                    <div className={`border-2 border-dashed border-gray-300 rounded-xl p-4 flex flex-col items-center justify-center h-32 text-center cursor-pointer hover:bg-gray-50 transition ${newBanner.mobileImageUrl ? 'bg-green-50 border-green-300' : ''}`}>
+                      <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'mobileImageUrl')} className="hidden" id="mobile-upload" />
+                      <label htmlFor="mobile-upload" className="cursor-pointer w-full h-full flex flex-col items-center justify-center">
+                        {newBanner.mobileImageUrl ? (
+                          <span className="text-green-600 font-bold text-xs">Imagem Carregada!</span>
+                        ) : (
+                          <>
+                            <span className="material-symbols-outlined text-gray-400">smartphone</span>
+                            <span className="text-xs text-gray-400 mt-1">Carregar Imagem</span>
+                          </>
+                        )}
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <input
+                    className="w-full bg-gray-50 rounded-xl h-10 px-4 border border-gray-200"
+                    placeholder="Título (Opcional)"
+                    value={newBanner.title}
+                    onChange={e => setNewBanner({ ...newBanner, title: e.target.value })}
+                  />
+                  <input
+                    className="w-full bg-gray-50 rounded-xl h-10 px-4 border border-gray-200"
+                    placeholder="Subtítulo (Opcional)"
+                    value={newBanner.subtitle}
+                    onChange={e => setNewBanner({ ...newBanner, subtitle: e.target.value })}
+                  />
+                </div>
+                <input
+                  className="w-full bg-gray-50 rounded-xl h-10 px-4 border border-gray-200"
+                  placeholder="Link de Destino (ex: /category/Promoções)"
+                  value={newBanner.linkUrl}
+                  onChange={e => setNewBanner({ ...newBanner, linkUrl: e.target.value })}
+                />
+
+                <button type="submit" className="w-full bg-primary text-white font-bold h-12 rounded-xl hover:bg-primary/90 transition">
+                  Adicionar Banner
+                </button>
+              </form>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-bold">Banners Ativos</h3>
+              {state.banners.map(banner => (
+                <div key={banner.id} className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm flex gap-4 items-center">
+                  <img src={banner.mobileImageUrl} className="w-16 h-16 object-cover rounded-lg bg-gray-100" alt="Mobile Preview" />
+                  <div className="flex-1">
+                    <h4 className="font-bold text-sm">{banner.title || 'Sem Título'}</h4>
+                    <p className="text-xs text-gray-500">{banner.linkUrl}</p>
+                  </div>
+                  <button onClick={() => onRemoveBanner(banner.id)} className="text-red-500 p-2 hover:bg-red-50 rounded-lg">
+                    <span className="material-symbols-outlined">delete</span>
+                  </button>
+                </div>
+              ))}
+              {state.banners.length === 0 && <p className="text-gray-400 text-sm text-center py-4">Nenhum banner ativo.</p>}
             </div>
           </section>
         ) : (
@@ -325,6 +498,13 @@ const Admin: React.FC<AdminProps> = ({ state, onAdd, onUpdate, onDelete, onAddCa
                   <div className="flex items-center gap-1">
                     <button onClick={() => handleEdit(product)} className="p-2 text-primary hover:bg-primary/10 rounded-xl transition-colors">
                       <span className="material-symbols-outlined text-[20px]">edit</span>
+                    </button>
+                    <button
+                      onClick={() => toggleFeatured(product)}
+                      className={`p-2 rounded-xl transition-colors ${product.isFeatured ? 'text-amber-500 bg-amber-50' : 'text-gray-300 hover:bg-gray-100'}`}
+                      title={product.isFeatured ? "Remover Destaque" : "Destacar"}
+                    >
+                      <span className="material-symbols-outlined text-[20px]">{product.isFeatured ? 'star' : 'star_outline'}</span>
                     </button>
                     <button onClick={() => onDelete(product.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-xl transition-colors">
                       <span className="material-symbols-outlined text-[20px]">delete</span>

@@ -13,7 +13,8 @@ interface HomeProps {
 const Home: React.FC<HomeProps> = ({ state, onToggleFavorite, searchQuery, setSearchQuery }) => {
   const navigate = useNavigate();
 
-  const featuredProducts = state.products.filter(p => p.isFeatured).slice(0, 4);
+  // Featured limit 10
+  const featuredProducts = state.products.filter(p => p.isFeatured).slice(0, 10);
   // Use dynamic categories from state
   const categories = state.categories;
 
@@ -49,7 +50,7 @@ const Home: React.FC<HomeProps> = ({ state, onToggleFavorite, searchQuery, setSe
               }}
               className="text-xl font-bold tracking-tight select-none cursor-default active:scale-95 transition-transform"
             >
-              Loja de Afiliados
+              Wend Promoções
             </h1>
           </div>
         </div>
@@ -69,20 +70,31 @@ const Home: React.FC<HomeProps> = ({ state, onToggleFavorite, searchQuery, setSe
 
       <main>
         {/* Banner */}
-        {!searchQuery && (
+        {/* Banner */}
+        {!searchQuery && state.banners && state.banners.length > 0 && (
           <div className="px-4 py-4">
-            <div className="relative w-full overflow-hidden rounded-2xl aspect-[16/9] shadow-lg group">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-primary/40 flex flex-col justify-end p-6 z-10">
-                <span className="bg-white/20 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded w-fit mb-2">Oferta Limitada</span>
-                <h3 className="text-white text-2xl font-bold leading-tight mb-1">Semana Tech chegou!</h3>
-                <p className="text-white/90 text-sm">Economize até 40% nos melhores eletrônicos.</p>
-              </div>
-              <img
-                src="https://picsum.photos/seed/tech/800/450"
-                alt="Tech Banner"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-              />
-            </div>
+            {/* Simple carousel or just show the last added banner for now (or random) */}
+            {(() => {
+              // Determine which banner to show (e.g., last one)
+              const banner = state.banners[state.banners.length - 1];
+              return (
+                <Link to={banner.linkUrl || '#'} className="relative w-full overflow-hidden rounded-2xl aspect-[16/9] shadow-lg group block">
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-primary/40 flex flex-col justify-end p-6 z-10">
+                    {banner.title && <span className="bg-white/20 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded w-fit mb-2">Oferta</span>}
+                    {banner.title && <h3 className="text-white text-2xl font-bold leading-tight mb-1">{banner.title}</h3>}
+                    {banner.subtitle && <p className="text-white/90 text-sm">{banner.subtitle}</p>}
+                  </div>
+                  <picture>
+                    <source media="(min-width: 768px)" srcSet={banner.desktopImageUrl} />
+                    <img
+                      src={banner.mobileImageUrl}
+                      alt={banner.title || "Banner"}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    />
+                  </picture>
+                </Link>
+              );
+            })()}
           </div>
         )}
 

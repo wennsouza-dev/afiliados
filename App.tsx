@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, useNavigate, useParams, Link } from 'react-router-dom';
 import { Product, Category, AppState, Banner } from './types';
-import { INITIAL_PRODUCTS } from './constants';
 import Home from './pages/Home';
 import CategoryPage from './pages/CategoryPage';
 import ProductDetail from './pages/ProductDetail';
@@ -154,6 +153,14 @@ const App: React.FC = () => {
       banners: prev.banners.filter(b => b.id !== id)
     }));
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <HashRouter>

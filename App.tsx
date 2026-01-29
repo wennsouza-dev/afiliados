@@ -1,12 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, useNavigate, useParams, Link } from 'react-router-dom';
-import { Product, Category, AppState, Banner } from './types';
+import { Product, Category, AppState, Banner, CategoryItem } from './types';
 import Home from './pages/Home';
 import CategoryPage from './pages/CategoryPage';
 import ProductDetail from './pages/ProductDetail';
 import Admin from './pages/Admin';
 import Login from './pages/Login';
+import { dbService } from './services/dbService';
+import { INITIAL_PRODUCTS } from './constants';
 
 const RequireAuth: React.FC<{ children: React.ReactElement }> = ({ children }) => {
   const isAdmin = localStorage.getItem('isAdmin') === 'true';
@@ -22,13 +24,23 @@ const RequireAuth: React.FC<{ children: React.ReactElement }> = ({ children }) =
 };
 
 const App: React.FC = () => {
-  const [state, setState] = useState<AppState>(() => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [state, setState] = useState<AppState>({
+    products: [],
+    favorites: [],
+    categories: [],
+    banners: []
+  });
+
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const loadLocalState = () => {
     try {
       const saved = localStorage.getItem('affiliate_store_state');
       if (saved) {
         const parsed = JSON.parse(saved);
-        // Migration: Ensure categories exist if loading old state
-        if (!parsed.categories) {
+        // Ensure defaults if missing in local storage
+        if (!parsed.categories || parsed.categories.length === 0) {
           parsed.categories = [
             { id: '1', name: 'Eletrônicos', subcategories: ['Celulares', 'TVs', 'Notebooks', 'Fones'] },
             { id: '2', name: 'Casa', subcategories: ['Eletrodomésticos', 'Decoração', 'Móveis'] },
@@ -36,9 +48,7 @@ const App: React.FC = () => {
             { id: '4', name: 'Beleza', subcategories: ['Perfumes', 'Maquiagem', 'Skincare'] }
           ];
         }
-
-        // Migration: Ensure banners exist if loading old state
-        if (!parsed.banners) {
+        if (!parsed.banners || parsed.banners.length === 0) {
           parsed.banners = [
             {
               id: '1',
@@ -50,60 +60,122 @@ const App: React.FC = () => {
             }
           ];
         }
-        return parsed;
+        setState(parsed);
+      } else {
+        // Defaults
+        setState({
+          products: INITIAL_PRODUCTS,
+          favorites: [],
+          categories: [
+            { id: '1', name: 'Eletrônicos', subcategories: ['Celulares', 'TVs', 'Notebooks', 'Fones'] },
+            { id: '2', name: 'Casa', subcategories: ['Eletrodomésticos', 'Decoração', 'Móveis'] },
+            { id: '3', name: 'Moda', subcategories: ['Roupas', 'Sapatos', 'Acessórios'] },
+            { id: '4', name: 'Beleza', subcategories: ['Perfumes', 'Maquiagem', 'Skincare'] }
+          ],
+          banners: [
+            {
+              id: '1',
+              desktopImageUrl: 'https://picsum.photos/seed/tech/1200/400',
+              mobileImageUrl: 'https://picsum.photos/seed/tech/600/600',
+              title: 'Semana Tech chegou!',
+              subtitle: 'Economize até 40% nos melhores eletrônicos.',
+              linkUrl: '/category/Eletrônicos'
+            }
+          ]
+        });
       }
-    } catch (error) {
-      console.error('Failed to load state from localStorage:', error);
-      // Fallback to default state if parsing fails
+    } catch (e) {
+      console.error("Local load failed", e);
     }
+  };
 
-    return {
-      products: INITIAL_PRODUCTS,
-      favorites: [],
-      categories: [
-        { id: '1', name: 'Eletrônicos', subcategories: ['Celulares', 'TVs', 'Notebooks', 'Fones'] },
-        { id: '2', name: 'Casa', subcategories: ['Eletrodomésticos', 'Decoração', 'Móveis'] },
-        { id: '3', name: 'Moda', subcategories: ['Roupas', 'Sapatos', 'Acessórios'] },
-        { id: '4', name: 'Beleza', subcategories: ['Perfumes', 'Maquiagem', 'Skincare'] }
-      ],
-      banners: [
-        {
-          id: '1',
-          desktopImageUrl: 'https://picsum.photos/seed/tech/1200/400',
-          mobileImageUrl: 'https://picsum.photos/seed/tech/600/600',
-          title: 'Semana Tech chegou!',
-          subtitle: 'Economize até 40% nos melhores eletrônicos.',
-          linkUrl: '/category/Eletrônicos'
+  // Initial Data Load
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      try {
+        // Try fetching from Supabase first
+        const [products, categories, banners] = await Promise.all([
+          dbService.getProducts(),
+          dbService.getCategories(),
+          dbService.getBanners()
+        ]);
+
+        if (products.length > 0 || categories.length > 0) {
+          // If Supabase has data, use it
+          setState(prev => ({
+            ...prev,
+            products,
+            categories: categories.length > 0 ? categories : prev.categories,
+            banners: banners.length > 0 ? banners : prev.banners
+          }));
+        } else {
+          // If Supabase is empty, fall back to LocalStorage or Defaults
+          console.log("Supabase seems empty, falling back to local/default data.");
+          loadLocalState();
         }
-      ]
+      } catch (error) {
+        console.error("Error connecting to Supabase:", error);
+        // Fallback to local on error
+        loadLocalState();
+      } finally {
+        setIsLoading(false);
+      }
     };
-  });
 
-  const [searchQuery, setSearchQuery] = useState('');
+    loadData();
+  }, []);
 
+  // Sync current state to Supabase
+  const syncToCloud = async () => {
+    if (!confirm("Isso enviará todos os dados locais para o Supabase (Cloud). Deseja continuar?")) return;
+
+    setIsLoading(true);
+    try {
+      console.log("Starting sync...");
+      // Upsert all products
+      await Promise.all(state.products.map(p => dbService.upsertProduct(p)));
+      // Upsert all categories
+      await Promise.all(state.categories.map(c => dbService.upsertCategory(c)));
+      // Upsert all banners
+      await Promise.all(state.banners.map(b => dbService.upsertBanner(b)));
+
+      alert("Sincronização concluída com sucesso!");
+    } catch (error) {
+      console.error("Sync failed:", error);
+      alert("Erro ao sincronizar. Verifique o console.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Persist to local storage as backup whenever state changes
   useEffect(() => {
     localStorage.setItem('affiliate_store_state', JSON.stringify(state));
   }, [state]);
 
-  const addProduct = (product: Product) => {
+  const addProduct = async (product: Product) => {
     setState(prev => ({
       ...prev,
       products: [product, ...prev.products]
     }));
+    await dbService.upsertProduct(product).catch(console.error);
   };
 
-  const updateProduct = (product: Product) => {
+  const updateProduct = async (product: Product) => {
     setState(prev => ({
       ...prev,
       products: prev.products.map(p => p.id === product.id ? product : p)
     }));
+    await dbService.upsertProduct(product).catch(console.error);
   };
 
-  const deleteProduct = (id: string) => {
+  const deleteProduct = async (id: string) => {
     setState(prev => ({
       ...prev,
       products: prev.products.filter(p => p.id !== id)
     }));
+    await dbService.deleteProduct(id).catch(console.error);
   };
 
   const toggleFavorite = (id: string) => {
@@ -115,49 +187,63 @@ const App: React.FC = () => {
     }));
   };
 
-  const addCategory = (name: string) => {
+  const addCategory = async (name: string) => {
+    const newCategory = { id: Date.now().toString(), name, subcategories: [] };
     setState(prev => ({
       ...prev,
-      categories: [...prev.categories, { id: Date.now().toString(), name, subcategories: [] }]
+      categories: [...prev.categories, newCategory]
     }));
+    await dbService.upsertCategory(newCategory).catch(console.error);
   };
 
-  const addSubcategory = (categoryId: string, subcategory: string) => {
+  const addSubcategory = async (categoryId: string, subcategory: string) => {
+    let updatedCategory: CategoryItem | undefined;
+
     setState(prev => ({
       ...prev,
-      categories: prev.categories.map(cat =>
-        cat.id === categoryId
-          ? { ...cat, subcategories: [...cat.subcategories, subcategory] }
-          : cat
-      )
+      categories: prev.categories.map(cat => {
+        if (cat.id === categoryId) {
+          updatedCategory = { ...cat, subcategories: [...cat.subcategories, subcategory] };
+          return updatedCategory;
+        }
+        return cat;
+      })
     }));
+
+    if (updatedCategory) {
+      await dbService.upsertCategory(updatedCategory).catch(console.error);
+    }
   };
 
-  const deleteCategory = (id: string) => {
+  const deleteCategory = async (id: string) => {
     setState(prev => ({
       ...prev,
       categories: prev.categories.filter(c => c.id !== id)
     }));
+    await dbService.deleteCategory(id).catch(console.error);
   };
 
-  const addBanner = (banner: Banner) => {
+  const addBanner = async (banner: Banner) => {
     setState(prev => ({
       ...prev,
       banners: [...prev.banners, banner]
     }));
+    await dbService.upsertBanner(banner).catch(console.error);
   };
 
-  const removeBanner = (id: string) => {
+  const removeBanner = async (id: string) => {
     setState(prev => ({
       ...prev,
       banners: prev.banners.filter(b => b.id !== id)
     }));
+    await dbService.deleteBanner(id).catch(console.error);
   };
 
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        <span className="ml-3 text-primary font-bold">Carregando dados...</span>
       </div>
     );
   }
@@ -182,6 +268,7 @@ const App: React.FC = () => {
                 onDeleteCategory={deleteCategory}
                 onAddBanner={addBanner}
                 onRemoveBanner={removeBanner}
+                onSync={syncToCloud}
               />
             </RequireAuth>
           } />

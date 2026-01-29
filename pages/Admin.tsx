@@ -14,9 +14,10 @@ interface AdminProps {
   onDeleteCategory: (id: string) => void;
   onAddBanner: (banner: any) => void;
   onRemoveBanner: (id: string) => void;
+  onSync: () => void;
 }
 
-const Admin: React.FC<AdminProps> = ({ state, onAdd, onUpdate, onDelete, onAddCategory, onAddSubcategory, onDeleteCategory, onAddBanner, onRemoveBanner }) => {
+const Admin: React.FC<AdminProps> = ({ state, onAdd, onUpdate, onDelete, onAddCategory, onAddSubcategory, onDeleteCategory, onAddBanner, onRemoveBanner, onSync }) => {
   const navigate = useNavigate();
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeTab, setActiveTab] = useState<'products' | 'categories' | 'banners'>('products');
@@ -176,10 +177,13 @@ const Admin: React.FC<AdminProps> = ({ state, onAdd, onUpdate, onDelete, onAddCa
   return (
     <div className="pb-32">
       <header className="sticky top-0 z-50 flex items-center bg-white dark:bg-background-dark border-b border-gray-200 dark:border-gray-800 p-4 justify-between">
-        <button onClick={() => navigate('/')} className="size-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-          <span className="material-symbols-outlined">arrow_back</span>
-        </button>
-        <h2 className="text-lg font-bold">Painel Admin</h2>
+        <div className="flex items-center gap-2">
+          <button onClick={() => navigate('/')} className="size-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+            <span className="material-symbols-outlined">arrow_back</span>
+          </button>
+          <h2 className="text-lg font-bold hidden md:block">Painel Admin</h2>
+        </div>
+
         <div className="flex bg-gray-100 rounded-full p-1 gap-1">
           <button
             onClick={() => setActiveTab('products')}
@@ -200,6 +204,15 @@ const Admin: React.FC<AdminProps> = ({ state, onAdd, onUpdate, onDelete, onAddCa
             Banners
           </button>
         </div>
+
+        <button
+          onClick={onSync}
+          className="ml-2 flex items-center gap-1 px-3 py-2 bg-blue-100 text-blue-700 rounded-lg text-xs font-bold hover:bg-blue-200 transition-colors"
+          title="Sincronizar com Nuvem"
+        >
+          <span className="material-symbols-outlined text-sm">cloud_sync</span>
+          <span className="hidden md:inline">Sincronizar</span>
+        </button>
       </header>
 
       <div className="p-4">

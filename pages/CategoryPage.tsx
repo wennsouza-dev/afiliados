@@ -123,14 +123,18 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ state, onToggleFavorite }) 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {filteredProducts.map((product) => (
               <div key={product.id} className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col transition-transform hover:scale-[1.01]">
-                <div className="relative aspect-square bg-gray-50 dark:bg-gray-800 overflow-hidden">
+                <div className="aspect-square relative overflow-hidden bg-gray-50 dark:bg-gray-800 group">
                   {product.originalPrice && (
                     <div className="absolute top-3 left-3 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider z-20">
                       {Math.round((1 - product.price / product.originalPrice) * 100)}% OFF
                     </div>
                   )}
-                  <Link to={`/product/${product.id}`} className="absolute inset-0 flex items-center justify-center p-6 z-10">
-                    <img src={product.imageUrl} alt={product.name} className="max-w-full max-h-full object-contain" />
+                  <Link to={`/product/${product.id}`}>
+                    <img
+                      src={product.imageUrl}
+                      alt={product.name}
+                      className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+                    />
                   </Link>
                   <button
                     onClick={() => onToggleFavorite(product.id)}

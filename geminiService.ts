@@ -1,9 +1,15 @@
-
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+const apiKey = process.env.API_KEY;
+// Only instantiate if key exists/is not empty
+const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
 export const generateProductDescription = async (productName: string, category: string): Promise<string> => {
+  if (!ai) {
+    console.warn("Gemini API Key not configured. Skipping description generation.");
+    return "Descrição automática indisponível (API Key não configurada).";
+  }
+
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',

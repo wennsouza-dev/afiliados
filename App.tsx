@@ -37,6 +37,20 @@ const App: React.FC = () => {
             { id: '4', name: 'Beleza', subcategories: ['Perfumes', 'Maquiagem', 'Skincare'] }
           ];
         }
+
+        // Migration: Ensure banners exist if loading old state
+        if (!parsed.banners) {
+          parsed.banners = [
+            {
+              id: '1',
+              desktopImageUrl: 'https://picsum.photos/seed/tech/1200/400',
+              mobileImageUrl: 'https://picsum.photos/seed/tech/600/600',
+              title: 'Semana Tech chegou!',
+              subtitle: 'Economize até 40% nos melhores eletrônicos.',
+              linkUrl: '/category/Eletrônicos'
+            }
+          ];
+        }
         return parsed;
       }
     } catch (error) {

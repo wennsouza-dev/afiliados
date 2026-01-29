@@ -40,7 +40,7 @@ const ProductCard = ({ product, state, onToggleFavorite }: { product: Product; s
         <p className="text-[10px] text-gray-500 mb-0.5">A partir de</p>
         <p className="text-primary text-lg font-bold flex items-center gap-1 flex-wrap">
           R$ {product.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-          {product.hasPixDiscount && <span className="text-green-600 text-[10px] font-bold bg-green-50 px-1.5 py-0.5 rounded uppercase">no Pix</span>}
+          {product.hasPixDiscount && <span className="text-green-600 text-[10px] font-bold bg-green-50 px-1.5 py-0.5 rounded uppercase">Ganhe mais desconto pagando no PIX</span>}
         </p>
         <p className="text-[9px] text-gray-400 mb-2 font-medium">Preço sujeito a alteração</p>
         <a

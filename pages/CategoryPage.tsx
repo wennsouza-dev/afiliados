@@ -43,8 +43,9 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ state, onToggleFavorite }) 
     <div className="pb-24 md:pb-8 max-w-7xl mx-auto">
       <header className="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 p-4 flex flex-col md:flex-row md:items-center gap-4">
         <div className="flex items-center justify-between md:min-w-[200px]">
-          <button onClick={() => navigate(-1)} className="size-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors md:hidden">
-            <span className="material-symbols-outlined text-primary">arrow_back_ios_new</span>
+          <button onClick={() => navigate(-1)} className="group flex items-center justify-center md:justify-start gap-1 w-10 h-10 md:w-auto md:h-10 md:px-4 md:py-2 rounded-full md:rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
+            <span className="material-symbols-outlined text-primary group-hover:-translate-x-1 transition-transform">arrow_back_ios_new</span>
+            <span className="hidden md:block font-bold text-primary text-sm">Voltar</span>
           </button>
           <h2 className="text-lg font-bold flex-1 text-center md:text-left md:ml-2">{categoryName}</h2>
           <div className="w-10 md:hidden"></div>

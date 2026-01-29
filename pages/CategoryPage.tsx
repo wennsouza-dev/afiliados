@@ -63,12 +63,12 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ state, onToggleFavorite }) 
         </div>
       </header>
 
-      <div className="flex flex-col md:flex-row">
+      <div className="flex flex-col md:flex-row w-full max-w-[100vw] overflow-x-hidden">
         {/* Desktop Sidebar / Mobile Chips */}
-        <aside className="md:w-64 md:shrink-0 md:p-6 md:sticky md:top-24 md:h-[calc(100vh-6rem)] md:overflow-y-auto">
+        <aside className="md:w-64 md:shrink-0 md:p-6 md:sticky md:top-24 md:h-[calc(100vh-6rem)] md:overflow-y-auto w-full box-border">
           <h3 className="hidden md:block font-bold text-gray-900 dark:text-white mb-4">Filtrar por</h3>
 
-          <div className="flex gap-2 p-4 pt-0 overflow-x-auto hide-scrollbar scroll-smooth md:p-0 md:flex-col md:gap-1">
+          <div className="flex gap-2 p-3 overflow-x-auto hide-scrollbar scroll-smooth md:p-0 md:flex-col md:gap-1 w-full box-border">
             {categoryName === 'Tudo' ? (
               // Show Main Categories when "Tudo"
               <>
@@ -120,8 +120,8 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ state, onToggleFavorite }) 
           </div>
         </aside>
 
-        <div className="p-2 md:p-4 space-y-4 md:space-y-0 md:flex-1 min-w-0">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-6">
+        <div className="p-3 md:p-6 space-y-4 md:space-y-0 md:flex-1 min-w-0 w-full box-border">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {filteredProducts.map((product) => (
               <div key={product.id} className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm flex flex-col transition-transform active:scale-[0.98]">
                 <div className="aspect-square relative overflow-hidden bg-gray-50 dark:bg-gray-900 group">

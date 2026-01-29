@@ -121,22 +121,22 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ state, onToggleFavorite }) 
         </aside>
 
         <div className="p-4 space-y-4 md:space-y-0 md:flex-1">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
             {filteredProducts.map((product) => (
-              <div key={product.id} className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col transition-transform hover:scale-[1.01]">
-                <div className="aspect-square relative overflow-hidden bg-gray-50 dark:bg-gray-800 group">
-                  {product.originalPrice && (
-                    <div className="absolute top-3 left-3 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider z-20">
-                      {Math.round((1 - product.price / product.originalPrice) * 100)}% OFF
-                    </div>
-                  )}
+              <div key={product.id} className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm flex flex-col transition-transform active:scale-[0.98]">
+                <div className="aspect-square relative overflow-hidden bg-gray-50 dark:bg-gray-900 group">
                   <Link to={`/product/${product.id}`}>
                     <img
                       src={product.imageUrl}
                       alt={product.name}
-                      className="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500"
                     />
                   </Link>
+                  {product.isBestSeller && (
+                    <div className="absolute top-2 left-2 bg-red-600 text-white text-[9px] font-bold py-1 px-2 rounded-md shadow-sm z-20 uppercase tracking-wide">
+                      MAIS VENDIDO
+                    </div>
+                  )}
                   {product.accepts_12x && (
                     <div className="absolute bottom-2 left-2 right-2 bg-green-600 text-white text-[9px] font-bold py-1 px-2 rounded-md text-center shadow-sm z-20">
                       PARCELE EM ATÉ 12X
@@ -144,34 +144,33 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ state, onToggleFavorite }) 
                   )}
                   <button
                     onClick={() => onToggleFavorite(product.id)}
-                    className={`absolute top-3 right-3 size-9 rounded-full flex items-center justify-center backdrop-blur-sm z-20 shadow-sm transition-colors ${state.favorites.includes(product.id) ? 'bg-red-50 text-red-500' : 'bg-white/80 dark:bg-black/40 text-gray-400'
+                    className={`absolute top-2 right-2 size-8 rounded-full flex items-center justify-center backdrop-blur-sm transition-colors ${state.favorites.includes(product.id) ? 'bg-red-50 text-red-500' : 'bg-white/80 dark:bg-black/40 text-gray-400'
                       }`}
                   >
                     <span className={`material-symbols-outlined text-[20px] ${state.favorites.includes(product.id) ? 'fill-1' : ''}`}>favorite</span>
                   </button>
                 </div>
-
-                <div className="p-4 flex flex-col flex-1">
+                <div className="p-3 flex flex-col flex-1">
+                  <h3 className="text-[10px] text-gray-500 dark:text-gray-400 font-medium uppercase mb-1">{product.category}</h3>
                   <Link to={`/product/${product.id}`}>
-                    <h3 className="text-lg font-bold leading-tight mb-2 line-clamp-2">{product.name}</h3>
+                    <p className="text-[#0d141b] dark:text-white text-sm font-semibold line-clamp-2 mb-2 leading-snug h-10">{product.name}</p>
                   </Link>
-
-                  <div className="flex flex-col mb-4 mt-auto">
-                    {product.originalPrice && <span className="text-xs text-gray-400 line-through">R$ {product.originalPrice.toLocaleString('pt-BR')}</span>}
-                    <span className="text-gray-500 text-xs font-medium mb-1">A partir de</span>
-                    <span className="text-primary text-2xl font-extrabold leading-none">R$ {product.price.toLocaleString('pt-BR')}</span>
-                    <span className="text-[10px] text-gray-400 mt-1 font-medium">Preço sujeito a alteração</span>
-                    <span className="text-slate-400 text-xs mt-1">Frete Grátis · Loja Oficial</span>
+                  <div className="mt-auto">
+                    <p className="text-[10px] text-gray-500 mb-0.5">A partir de</p>
+                    <p className="text-primary text-lg font-bold flex items-center gap-1 flex-wrap">
+                      R$ {product.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                      {product.hasPixDiscount && <span className="text-green-600 text-[10px] font-bold bg-green-50 px-1.5 py-0.5 rounded uppercase">Ganhe mais desconto pagando no PIX</span>}
+                    </p>
+                    <p className="text-[9px] text-gray-400 mb-2 font-medium">Preço sujeito a alteração</p>
+                    <a
+                      href={product.affiliateUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full bg-mercadolivre hover:bg-mercadolivre-dark text-[#0d141b] text-[11px] font-bold py-2.5 px-1 rounded-lg transition-colors flex items-center justify-center gap-1 uppercase tracking-tight"
+                    >
+                      COMPRAR
+                    </a>
                   </div>
-
-                  <a
-                    href={product.affiliateUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex w-full items-center justify-center h-12 px-4 bg-mercadolivre text-slate-900 text-sm font-bold rounded-xl shadow-sm hover:brightness-95 active:scale-[0.98] transition-all"
-                  >
-                    COMPRAR
-                  </a>
                 </div>
               </div>
             ))}

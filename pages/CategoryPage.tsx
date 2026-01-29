@@ -74,8 +74,8 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ state, onToggleFavorite }) 
                 <Link
                   to="/category/Tudo"
                   className={`flex h-9 md:h-10 shrink-0 items-center justify-center md:justify-start gap-x-2 rounded-full md:rounded-lg px-4 shadow-sm border md:border-transparent md:shadow-none transition-all ${categoryName === 'Tudo'
-                      ? 'bg-primary text-white border-primary md:bg-primary/10 md:text-primary md:border-transparent'
-                      : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-800'
+                    ? 'bg-primary text-white border-primary md:bg-primary/10 md:text-primary md:border-transparent'
+                    : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-800'
                     }`}
                 >
                   Todos
@@ -96,8 +96,8 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ state, onToggleFavorite }) 
                 <button
                   onClick={() => setSelectedSubcategory(null)}
                   className={`flex h-9 md:h-10 shrink-0 items-center justify-center md:justify-start gap-x-2 rounded-full md:rounded-lg px-4 shadow-sm border md:border-transparent md:shadow-none transition-all ${selectedSubcategory === null
-                      ? 'bg-primary text-white border-primary md:bg-primary/10 md:text-primary md:border-transparent'
-                      : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-800'
+                    ? 'bg-primary text-white border-primary md:bg-primary/10 md:text-primary md:border-transparent'
+                    : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-800'
                     }`}
                 >
                   Todos
@@ -107,8 +107,8 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ state, onToggleFavorite }) 
                     key={sub}
                     onClick={() => setSelectedSubcategory(sub === selectedSubcategory ? null : sub)}
                     className={`flex h-9 md:h-10 shrink-0 items-center justify-center md:justify-start gap-x-2 rounded-full md:rounded-lg px-4 shadow-sm border md:border-transparent md:shadow-none transition-all ${selectedSubcategory === sub
-                        ? 'bg-primary text-white border-primary md:bg-primary/10 md:text-primary md:border-transparent'
-                        : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-800'
+                      ? 'bg-primary text-white border-primary md:bg-primary/10 md:text-primary md:border-transparent'
+                      : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-800'
                       }`}
                   >
                     {sub}
@@ -129,7 +129,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ state, onToggleFavorite }) 
                       {Math.round((1 - product.price / product.originalPrice) * 100)}% OFF
                     </div>
                   )}
-                  <Link to={`/product/${product.id}`}>
+                  <Link to={`/product/${product.id}`} className="block w-full h-full">
                     <img src={product.imageUrl} alt={product.name} className="w-full h-full object-contain p-8" />
                   </Link>
                   <button

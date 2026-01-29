@@ -123,18 +123,18 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ state, onToggleFavorite }) 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {filteredProducts.map((product) => (
               <div key={product.id} className="bg-white dark:bg-gray-900 rounded-2xl overflow-hidden shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col transition-transform hover:scale-[1.01]">
-                <div className="relative aspect-square bg-gray-50 dark:bg-gray-800">
+                <div className="relative aspect-square bg-gray-50 dark:bg-gray-800 overflow-hidden">
                   {product.originalPrice && (
-                    <div className="absolute top-3 left-3 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider z-10">
+                    <div className="absolute top-3 left-3 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider z-20">
                       {Math.round((1 - product.price / product.originalPrice) * 100)}% OFF
                     </div>
                   )}
-                  <Link to={`/product/${product.id}`} className="block w-full h-full">
-                    <img src={product.imageUrl} alt={product.name} className="w-full h-full object-contain p-8" />
+                  <Link to={`/product/${product.id}`} className="absolute inset-0 flex items-center justify-center p-6 z-10">
+                    <img src={product.imageUrl} alt={product.name} className="max-w-full max-h-full object-contain" />
                   </Link>
                   <button
                     onClick={() => onToggleFavorite(product.id)}
-                    className={`absolute top-3 right-3 size-9 rounded-full flex items-center justify-center backdrop-blur-sm z-10 shadow-sm transition-colors ${state.favorites.includes(product.id) ? 'bg-red-50 text-red-500' : 'bg-white/80 dark:bg-black/40 text-gray-400'
+                    className={`absolute top-3 right-3 size-9 rounded-full flex items-center justify-center backdrop-blur-sm z-20 shadow-sm transition-colors ${state.favorites.includes(product.id) ? 'bg-red-50 text-red-500' : 'bg-white/80 dark:bg-black/40 text-gray-400'
                       }`}
                   >
                     <span className={`material-symbols-outlined text-[20px] ${state.favorites.includes(product.id) ? 'fill-1' : ''}`}>favorite</span>

@@ -120,8 +120,8 @@ const CategoryPage: React.FC<CategoryPageProps> = ({ state, onToggleFavorite }) 
           </div>
         </aside>
 
-        <div className="p-4 space-y-4 md:space-y-0 md:flex-1">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
+        <div className="p-2 md:p-4 space-y-4 md:space-y-0 md:flex-1 min-w-0">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-6">
             {filteredProducts.map((product) => (
               <div key={product.id} className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm flex flex-col transition-transform active:scale-[0.98]">
                 <div className="aspect-square relative overflow-hidden bg-gray-50 dark:bg-gray-900 group">

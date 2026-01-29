@@ -1,0 +1,7 @@
+{
+  "name": "Mercado Livre Affiliate Hub",
+  "description": "A high-performance affiliate store application with product management, category browsing, and AI-powered product descriptions using the Gemini API.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

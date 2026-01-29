@@ -13,8 +13,8 @@ interface HomeProps {
 const Home: React.FC<HomeProps> = ({ state, onToggleFavorite, searchQuery, setSearchQuery }) => {
   const navigate = useNavigate();
 
-  // Featured limit 10
-  const featuredProducts = state.products.filter(p => p.isFeatured).slice(0, 10);
+  // Featured limit 10000
+  const featuredProducts = state.products.filter(p => p.isFeatured).slice(0, 10000);
   // Use dynamic categories from state
   const categories = state.categories;
 
@@ -139,6 +139,11 @@ const Home: React.FC<HomeProps> = ({ state, onToggleFavorite, searchQuery, setSe
                     className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500"
                   />
                 </Link>
+                {product.isBestSeller && (
+                  <div className="absolute top-2 left-2 bg-red-600 text-white text-[9px] font-bold py-1 px-2 rounded-md shadow-sm z-20 uppercase tracking-wide">
+                    MAIS VENDIDO
+                  </div>
+                )}
                 {product.accepts_12x && (
                   <div className="absolute bottom-2 left-2 right-2 bg-green-600 text-white text-[9px] font-bold py-1 px-2 rounded-md text-center shadow-sm z-20">
                     PARCELE EM ATÉ 12X
@@ -159,7 +164,10 @@ const Home: React.FC<HomeProps> = ({ state, onToggleFavorite, searchQuery, setSe
                 </Link>
                 <div className="mt-auto">
                   <p className="text-[10px] text-gray-500 mb-0.5">A partir de</p>
-                  <p className="text-primary text-lg font-bold">R$ {product.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                  <p className="text-primary text-lg font-bold flex items-center gap-1 flex-wrap">
+                    R$ {product.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                    {product.hasPixDiscount && <span className="text-green-600 text-[10px] font-bold bg-green-50 px-1.5 py-0.5 rounded uppercase">no Pix</span>}
+                  </p>
                   <p className="text-[9px] text-gray-400 mb-2 font-medium">Preço sujeito a alteração</p>
                   <a
                     href={product.affiliateUrl}

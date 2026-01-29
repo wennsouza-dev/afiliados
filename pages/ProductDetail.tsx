@@ -110,6 +110,13 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ state, onToggleFavorite }
             )}
           </div>
 
+          {product.hasPixDiscount && (
+            <div className="flex items-center gap-1 mt-1">
+              <span className="material-symbols-outlined text-green-600 text-sm">payments</span>
+              <p className="text-green-600 font-bold text-sm">Desconto especial pagando no Pix</p>
+            </div>
+          )}
+
           <p className="text-[10px] text-slate-400 mt-2 leading-tight">
             * O preço pode variar dependendo do dia, horários, estoque e forma de pagamento. O valor final é o apresentado no site do vendedor.
           </p>

@@ -17,6 +17,8 @@ interface DBProduct {
     rating: number;
     reviews_count: number;
     accepts_12x: boolean;
+    is_best_seller: boolean;
+    has_pix_discount: boolean;
 }
 
 interface DBBanner {
@@ -53,7 +55,9 @@ export const dbService = {
             isFeatured: p.is_featured,
             rating: p.rating,
             reviewsCount: p.reviews_count,
-            accepts_12x: p.accepts_12x
+            accepts_12x: p.accepts_12x,
+            isBestSeller: p.is_best_seller,
+            hasPixDiscount: p.has_pix_discount
         }));
     },
 
@@ -71,7 +75,9 @@ export const dbService = {
             is_featured: product.isFeatured || false,
             rating: product.rating,
             reviews_count: product.reviewsCount,
-            accepts_12x: product.accepts_12x || false
+            accepts_12x: product.accepts_12x || false,
+            is_best_seller: product.isBestSeller || false,
+            has_pix_discount: product.hasPixDiscount || false
         };
 
         const { error } = await supabase.from('products').upsert(dbProduct);

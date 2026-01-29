@@ -169,11 +169,20 @@ const Admin: React.FC<AdminProps> = ({ state, onAdd, onUpdate, onDelete, onAddCa
 
   const toggleFeatured = (product: Product) => {
     const currentFeaturedCount = state.products.filter(p => p.isFeatured).length;
-    if (!product.isFeatured && currentFeaturedCount >= 10) {
-      alert("Você só pode ter até 10 destaques. Remova um destaque antes de adicionar outro.");
+    if (!product.isFeatured && currentFeaturedCount >= 10000) {
+      alert("Limite de destaques atingido.");
       return;
     }
     onUpdate({ ...product, isFeatured: !product.isFeatured });
+  };
+
+  const toggleBestSeller = (product: Product) => {
+    const currentBestSellerCount = state.products.filter(p => p.isBestSeller).length;
+    if (!product.isBestSeller && currentBestSellerCount >= 30) {
+      alert("Você só pode ter até 30 produtos marcados como 'Mais Vendidos'. Remova um antes de adicionar outro.");
+      return;
+    }
+    onUpdate({ ...product, isBestSeller: !product.isBestSeller });
   };
 
   return (
@@ -524,17 +533,32 @@ const Admin: React.FC<AdminProps> = ({ state, onAdd, onUpdate, onDelete, onAddCa
                   />
                 </div>
 
-                <div className="flex items-center gap-2 mb-4">
-                  <input
-                    type="checkbox"
-                    id="accepts_12x"
-                    className="w-5 h-5 rounded text-primary focus:ring-primary border-gray-300"
-                    checked={formData.accepts_12x || false}
-                    onChange={e => setFormData({ ...formData, accepts_12x: e.target.checked })}
-                  />
-                  <label htmlFor="accepts_12x" className="text-sm font-semibold select-none cursor-pointer">
-                    Aceita Parcelamento em até 12x
-                  </label>
+                <div className="flex flex-col gap-2 mb-4">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="accepts_12x"
+                      className="w-5 h-5 rounded text-primary focus:ring-primary border-gray-300"
+                      checked={formData.accepts_12x || false}
+                      onChange={e => setFormData({ ...formData, accepts_12x: e.target.checked })}
+                    />
+                    <label htmlFor="accepts_12x" className="text-sm font-semibold select-none cursor-pointer">
+                      Aceita Parcelamento em até 12x
+                    </label>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="hasPixDiscount"
+                      className="w-5 h-5 rounded text-primary focus:ring-primary border-gray-300"
+                      checked={formData.hasPixDiscount || false}
+                      onChange={e => setFormData({ ...formData, hasPixDiscount: e.target.checked })}
+                    />
+                    <label htmlFor="hasPixDiscount" className="text-sm font-semibold select-none cursor-pointer">
+                      Desconto no Pix
+                    </label>
+                  </div>
                 </div>
 
                 <button type="submit" className="w-full bg-primary text-white font-bold h-14 rounded-2xl shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all flex items-center justify-center gap-2 mt-4">
@@ -547,7 +571,7 @@ const Admin: React.FC<AdminProps> = ({ state, onAdd, onUpdate, onDelete, onAddCa
                     type="button"
                     onClick={() => {
                       setEditingId(null);
-                      setFormData({ name: '', category: '', subcategory: '', price: 0, imageUrl: '', affiliateUrl: '', description: '', rating: 5, reviewsCount: 0, accepts_12x: false });
+                      setFormData({ name: '', category: '', subcategory: '', price: 0, imageUrl: '', affiliateUrl: '', description: '', rating: 5, reviewsCount: 0, accepts_12x: false, hasPixDiscount: false });
                     }}
                     className="w-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 font-bold h-14 rounded-2xl transition-all"
                   >
@@ -585,6 +609,13 @@ const Admin: React.FC<AdminProps> = ({ state, onAdd, onUpdate, onDelete, onAddCa
                       title={product.isFeatured ? "Remover Destaque" : "Destacar"}
                     >
                       <span className="material-symbols-outlined text-[20px]">{product.isFeatured ? 'star' : 'star_outline'}</span>
+                    </button>
+                    <button
+                      onClick={() => toggleBestSeller(product)}
+                      className={`p-2 rounded-xl transition-colors ${product.isBestSeller ? 'text-red-500 bg-red-50' : 'text-gray-300 hover:bg-gray-100'}`}
+                      title={product.isBestSeller ? "Remover de Mais Vendidos" : "Marcar como Mais Vendido"}
+                    >
+                      <span className="material-symbols-outlined text-[20px]">{product.isBestSeller ? 'local_fire_department' : 'local_fire_department'}</span>
                     </button>
                     <button onClick={() => onDelete(product.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-xl transition-colors">
                       <span className="material-symbols-outlined text-[20px]">delete</span>

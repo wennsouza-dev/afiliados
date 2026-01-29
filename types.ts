@@ -27,6 +27,8 @@ export interface Product {
   rating: number;
   reviewsCount: number;
   accepts_12x?: boolean;
+  isBestSeller?: boolean;
+  hasPixDiscount?: boolean;
 }
 
 export enum Category {

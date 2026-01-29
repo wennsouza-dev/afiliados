@@ -78,7 +78,7 @@ const Home: React.FC<HomeProps> = ({ state, onToggleFavorite, searchQuery, setSe
               // Determine which banner to show (e.g., last one)
               const banner = state.banners[state.banners.length - 1];
               return (
-                <Link to={banner.linkUrl || '#'} className="relative w-full overflow-hidden rounded-2xl aspect-[16/9] md:aspect-[3/1] shadow-lg group block">
+                <Link to={banner.linkUrl || '#'} className="relative w-full overflow-hidden rounded-2xl aspect-square md:aspect-[3/1] shadow-lg group block">
                   {/* Overlay removed to show original colors */}
                   {(banner.title || banner.subtitle) && (
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-6 z-10">

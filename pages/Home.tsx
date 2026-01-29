@@ -67,7 +67,7 @@ const Home: React.FC<HomeProps> = ({ state, onToggleFavorite, searchQuery, setSe
   const navigate = useNavigate();
 
   // Featured section now strictly shows "Best Sellers" as requested
-  const featuredProducts = state.products.filter(p => p.isBestSeller).slice(0, 30);
+  const featuredProducts = state.products.filter(p => p.isBestSeller).slice(0, 50);
   // Use dynamic categories from state
   const categories = state.categories;
 

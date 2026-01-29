@@ -17,6 +17,27 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ state, onToggleFavorite }
     window.scrollTo(0, 0);
   }, [productId]);
 
+  const handleShare = async () => {
+    if (!product) return;
+
+    const shareData = {
+      title: product.name,
+      text: `Confira esta oferta: ${product.name}`,
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        alert("Link copiado para a área de transferência!");
+      }
+    } catch (err) {
+      console.error("Erro ao compartilhar:", err);
+    }
+  };
+
   if (!product) {
     return (
       <div className="flex flex-col items-center justify-center h-screen">
@@ -36,7 +57,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ state, onToggleFavorite }
         </button>
         <h2 className="text-lg font-bold truncate px-4">Detalhes</h2>
         <div className="flex items-center gap-2">
-          <button className="size-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+          <button onClick={handleShare} className="size-10 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
             <span className="material-symbols-outlined">share</span>
           </button>
           <button
